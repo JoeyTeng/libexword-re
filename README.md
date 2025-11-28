@@ -22,6 +22,8 @@ On *Arch Linux*: ```base-devel libusb cmake readline libtool glib2```
 
 On _Fedora (RHEL)_: ...
 
+On macOS: `brew install pkg-config cmake libusb iconv`
+
 ## Compiling
 
 On Terminal:
@@ -30,9 +32,8 @@ On Terminal:
 git clone https://github.com/CaesarW/libexword-re.git
 cd libexword-re
 mkdir build
-cd build
-cmake ..
-make
+cmake -S src -B build
+cmake --build build
 ```
 
 # Commands
