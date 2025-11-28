@@ -16,4 +16,6 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/includes)
 FILE(GLOB srcfile "databuffer.c" "dict.c" "exword.c" "obex.c" "util.c" )
 ADD_EXECUTABLE(${BIN_NAME} main.c ${srcfile})
 
-TARGET_LINK_LIBRARIES(${BIN_NAME} ${LIBUSB_LIBRARIES} readline)
+IF(APPLE)
+    TARGET_LINK_LIBRARIES(${BIN_NAME} "-framework CoreFoundation" "-framework Carbon")
+ENDIF()
