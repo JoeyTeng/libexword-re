@@ -283,5 +283,7 @@ int obex_object_getnextheader(obex_t *self, obex_object_t *object,
 			      uint8_t *hi, obex_headerdata_t *hv, uint32_t *hv_size);
 int obex_object_set_nonhdr_data(obex_object_t *object, const uint8_t *buffer, unsigned int len);
 int obex_request(obex_t *self, obex_object_t *object);
+int obex_object_addheader(obex_t *self, obex_object_t *object, uint8_t hi,
+	obex_headerdata_t hv, uint32_t hv_size, unsigned int flags);
 
 #endif

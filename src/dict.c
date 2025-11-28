@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include "dict.h"
 #include "exword.h"
 #include "util.h"
 

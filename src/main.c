@@ -26,6 +26,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#include "dict.h"
 #include "exword.h"
 #include "list.h"
 #include "util.h"
@@ -75,56 +76,56 @@ void dict(struct state *s);
 struct command commands[] = {
     {"connect", _connect,
      "connect [mode] [region]\t- connect to attached dictionary\n",
-	"Connects to device.\n\n"
-	"Region specifies the region of the device (default:ja).\n"
-	"Mode can be one of the following values:\n"
-	"library - connect as CASIO Library (default)\n"
-	"text    - connect as Textloader\n"
-	"cd      - connect as CDLoader\n"},
-{"disconnect", disconnect, "disconnect\t\t- disconnect from dictionary\n",
-	"Disconnects from device.\n"},
-{"model", model, "model\t\t\t- display model information\n",
-	"Displays model information of device.\n"},
-{"capacity", capacity, "capacity\t\t- display medium capacity\n",
-	"Displays capacity of current storage medium.\n"},
-{"format", format, "format\t\t\t- format SD card\n",
-	"Formats currently inserted SD Card.\n"},
-{"list", list, "list\t\t\t- list files\n",
-	"Lists files and directories under current path.\n\n"
-	"Directories are enclosed in <>.\n"
-	"Files or directories beginning with * were returned as unicode.\n"},
-{"delete", delete, "delete <filename>\t- delete a file\n",
-	"Deletes a file from dicionary.\n"},
+     "Connects to device.\n\n"
+     "Region specifies the region of the device (default:ja).\n"
+     "Mode can be one of the following values:\n"
+     "library - connect as CASIO Library (default)\n"
+     "text    - connect as Textloader\n"
+     "cd      - connect as CDLoader\n"},
+    {"disconnect", disconnect, "disconnect\t\t- disconnect from dictionary\n",
+     "Disconnects from device.\n"},
+    {"model", model, "model\t\t\t- display model information\n",
+     "Displays model information of device.\n"},
+    {"capacity", capacity, "capacity\t\t- display medium capacity\n",
+     "Displays capacity of current storage medium.\n"},
+    {"format", format, "format\t\t\t- format SD card\n",
+     "Formats currently inserted SD Card.\n"},
+    {"list", list, "list\t\t\t- list files\n",
+     "Lists files and directories under current path.\n\n"
+     "Directories are enclosed in <>.\n"
+     "Files or directories beginning with * were returned as unicode.\n"},
+    {"delete", delete, "delete <filename>\t- delete a file\n",
+     "Deletes a file from dicionary.\n"},
     {"send", _send, "send <filename>\t\t- upload a file\n",
-	"Uploads a file to dicionary.\n"},
-{"get", get, "get <filename>\t\t- download a file\n",
-	"Downloads a file from dicionary.\n"},
+     "Uploads a file to dicionary.\n"},
+    {"get", get, "get <filename>\t\t- download a file\n",
+     "Downloads a file from dicionary.\n"},
     {"setpath", setpath,
      "setpath <path>\t\t- changes directory on dictionary\n",
-	"Changes to the the specified path.\n\n"
-	"<path> is in the form of <sd|mem://<path>\n"
-	"Example: mem:/// - sets path to root of internal memory\n"},
-{"dict", dict, "dict <sub-function>\t- add-on dictionary commands\n",
-	"This command allows manipulation of add-on dictionaries. It uses\n"
-	"the storage medium of your current path as the storage device to\n"
-	"operate on. The reset sub-function WILL delete all installed\n"
-	"dictionaries.\n\n"
-	"Sub functions:\n"
-	"reset <user>\t  - resets authentication info\n"
-	"auth <user> <key> - authenticate to dictionary\n"
-	"list\t\t  - list installed add-on dictionaries\n"
-	"decrypt <id>\t  - decrypts specified add-on dictionary\n"
-	"remove  <id>\t  - removes specified add-on dictionary\n"
-	"install <id>\t  - installs specified add-on dictionary\n"},
-{"set", set, "set <option> [value]\t- sets program options\n",
+     "Changes to the the specified path.\n\n"
+     "<path> is in the form of <sd|mem://<path>\n"
+     "Example: mem:/// - sets path to root of internal memory\n"},
+    {"dict", dict, "dict <sub-function>\t- add-on dictionary commands\n",
+     "This command allows manipulation of add-on dictionaries. It uses\n"
+     "the storage medium of your current path as the storage device to\n"
+     "operate on. The reset sub-function WILL delete all installed\n"
+     "dictionaries.\n\n"
+     "Sub functions:\n"
+     "reset <user>\t  - resets authentication info\n"
+     "auth <user> <key> - authenticate to dictionary\n"
+     "list\t\t  - list installed add-on dictionaries\n"
+     "decrypt <id>\t  - decrypts specified add-on dictionary\n"
+     "remove  <id>\t  - removes specified add-on dictionary\n"
+     "install <id>\t  - installs specified add-on dictionary\n"},
+    {"set", set, "set <option> [value]\t- sets program options\n",
      "Sets <option> to [value], if no value is specified will display current "
      "value.\n\n"
-	"Available options:\n"
-	"debug <level>  - sets debug level (0-5)\n"
-	"mkdir <on|off> - specifies whether setpath should create directories\n"},
-{"exit", quit, "exit\t\t\t- exits program\n",
-	"Exits program and disconnects from device.\n"},
-{"help", help, NULL, NULL},
+     "Available options:\n"
+     "debug <level>  - sets debug level (0-5)\n"
+     "mkdir <on|off> - specifies whether setpath should create directories\n"},
+    {"exit", quit, "exit\t\t\t- exits program\n",
+     "Exits program and disconnects from device.\n"},
+    {"help", help, NULL, NULL},
     {NULL, NULL, NULL, NULL}};
 
 void load_history()
@@ -255,82 +256,82 @@ void help(struct state *s)
 
 void _connect(struct state *s) {
   int options = OPEN_LIBRARY | LOCALE_JA;
-	char *mode;
-	char *locale;
-	int error = 0;
-	int i;
-	uint16_t count;
-	exword_dirent_t *entries;
-	if (s->connected)
-		return;
+  char *mode;
+  char *locale;
+  int error = 0;
+  int i;
+  uint16_t count;
+  exword_dirent_t *entries;
+  if (s->connected)
+    return;
 
-	mode = peek_arg(&(s->cmd_list));
-	if (mode != NULL) {
-		if (strcmp(mode, "library") == 0) {
-			options = OPEN_LIBRARY;
-		} else if (strcmp(mode, "text") == 0) {
-			options = OPEN_TEXT;
-		} else if (strcmp(mode, "cd") == 0) {
-			options = OPEN_CD;
-		} else {
-			printf("Unknown 'type': %s\n", mode);
-			error = 1;
-		}
-		dequeue_arg(&(s->cmd_list));
-		locale = peek_arg(&(s->cmd_list));
-		if (!error && locale != NULL) {
-			if (strcmp(locale, "ja") == 0) {
-				options |= LOCALE_JA;
-			} else if (strcmp(locale, "kr") == 0) {
-				options |= LOCALE_KR;
-			} else if (strcmp(locale, "cn") == 0) {
-				options |= LOCALE_CN;
-			} else if (strcmp(locale, "de") == 0) {
-				options |= LOCALE_DE;
-			} else if (strcmp(locale, "es") == 0) {
-				options |= LOCALE_ES;
-			} else if (strcmp(locale, "fr") == 0) {
-				options |= LOCALE_FR;
-			} else if (strcmp(locale, "ru") == 0) {
-				options |= LOCALE_RU;
-			} else {
-				printf("Unknown 'locale': %s\n", locale);
-				error = 1;
-			}
-		} else if (!error) {
-			options |= LOCALE_JA;
-		}
-	}
-	if (!error) {
-		printf("connecting to device...");
-		s->device = exword_open2(options);
-		if (s->device == NULL) {
-			printf("device not found\n");
-		} else {
-			exword_set_debug(s->device, s->debug);
-			if (exword_connect(s->device) != 0x20) {
-				printf("connect failed\n");
-				exword_close(s->device);
-				s->device = NULL;
-			} else {
-				if (exword_setpath(s->device, ROOT, 0) == 0x20) {
-					if (exword_list(s->device, &entries, &count) == 0x20) {
-						for (i = 0; i < count; i++) {
-							if (strcmp(entries[i].name, "_SD_00") == 0) {
-								s->sd_inserted = 1;
-								break;
-							}
-						}
-						exword_free_list(entries);
-					}
-				}
-				_setpath(s, INTERNAL_MEM, "/", 2);
-				s->connected = 1;
-				s->mode = (options & 0xff00);
-				printf("done\n");
-			}
-		}
-	}
+  mode = peek_arg(&(s->cmd_list));
+  if (mode != NULL) {
+    if (strcmp(mode, "library") == 0) {
+      options = OPEN_LIBRARY;
+    } else if (strcmp(mode, "text") == 0) {
+      options = OPEN_TEXT;
+    } else if (strcmp(mode, "cd") == 0) {
+      options = OPEN_CD;
+    } else {
+      printf("Unknown 'type': %s\n", mode);
+      error = 1;
+    }
+    dequeue_arg(&(s->cmd_list));
+    locale = peek_arg(&(s->cmd_list));
+    if (!error && locale != NULL) {
+      if (strcmp(locale, "ja") == 0) {
+        options |= LOCALE_JA;
+      } else if (strcmp(locale, "kr") == 0) {
+        options |= LOCALE_KR;
+      } else if (strcmp(locale, "cn") == 0) {
+        options |= LOCALE_CN;
+      } else if (strcmp(locale, "de") == 0) {
+        options |= LOCALE_DE;
+      } else if (strcmp(locale, "es") == 0) {
+        options |= LOCALE_ES;
+      } else if (strcmp(locale, "fr") == 0) {
+        options |= LOCALE_FR;
+      } else if (strcmp(locale, "ru") == 0) {
+        options |= LOCALE_RU;
+      } else {
+        printf("Unknown 'locale': %s\n", locale);
+        error = 1;
+      }
+    } else if (!error) {
+      options |= LOCALE_JA;
+    }
+  }
+  if (!error) {
+    printf("connecting to device...");
+    s->device = exword_open2(options);
+    if (s->device == NULL) {
+      printf("device not found\n");
+    } else {
+      exword_set_debug(s->device, s->debug);
+      if (exword_connect(s->device) != 0x20) {
+        printf("connect failed\n");
+        exword_close(s->device);
+        s->device = NULL;
+      } else {
+        if (exword_setpath(s->device, ROOT, 0) == 0x20) {
+          if (exword_list(s->device, &entries, &count) == 0x20) {
+            for (i = 0; i < count; i++) {
+              if (strcmp(entries[i].name, "_SD_00") == 0) {
+                s->sd_inserted = 1;
+                break;
+              }
+            }
+            exword_free_list(entries);
+          }
+        }
+        _setpath(s, INTERNAL_MEM, "/", 2);
+        s->connected = 1;
+        s->mode = (options & 0xff00);
+        printf("done\n");
+      }
+    }
+  }
 }
 
 void disconnect(struct state *s)
@@ -395,26 +396,26 @@ void format(struct state *s)
 }
 
 void _send(struct state *s) {
-	int rsp, len;
-	char *buffer;
-	char *filename;
-	char *name = NULL;
-	if (!s->connected)
-		return;
-	filename = peek_arg(&(s->cmd_list));
-	if (filename == NULL) {
-		printf("No file specified\n");
-	} else {
-		name = xmalloc(strlen(filename) + 1);
-		strcpy(name, filename);
-		printf("uploading...");
-		rsp = read_file(name, &buffer, &len);
-		if (rsp == 0x20)
-			rsp = exword_send_file(s->device, basename(name), buffer, len);
-		free(name);
-		free(buffer);
-		printf("%s\n", exword_response_to_string(rsp));
-	}
+  int rsp, len;
+  char *buffer;
+  char *filename;
+  char *name = NULL;
+  if (!s->connected)
+    return;
+  filename = peek_arg(&(s->cmd_list));
+  if (filename == NULL) {
+    printf("No file specified\n");
+  } else {
+    name = xmalloc(strlen(filename) + 1);
+    strcpy(name, filename);
+    printf("uploading...");
+    rsp = read_file(name, &buffer, &len);
+    if (rsp == 0x20)
+      rsp = exword_send_file(s->device, basename(name), buffer, len);
+    free(name);
+    free(buffer);
+    printf("%s\n", exword_response_to_string(rsp));
+  }
 }
 
 void get(struct state *s)
