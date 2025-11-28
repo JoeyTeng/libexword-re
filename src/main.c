@@ -59,7 +59,7 @@ struct command {
 
 void quit(struct state *s);
 void help(struct state *s);
-void connect(struct state *s);
+void _connect(struct state *s);
 void disconnect(struct state *s);
 void set(struct state *s);
 void model(struct state *s);
@@ -67,13 +67,14 @@ void capacity(struct state *s);
 void format(struct state *s);
 void list(struct state *s);
 void delete(struct state *s);
-void send(struct state *s);
+void _send(struct state *s);
 void get(struct state *s);
 void setpath(struct state *s);
 void dict(struct state *s);
 
 struct command commands[] = {
-{"connect", connect, "connect [mode] [region]\t- connect to attached dictionary\n",
+    {"connect", _connect,
+     "connect [mode] [region]\t- connect to attached dictionary\n",
 	"Connects to device.\n\n"
 	"Region specifies the region of the device (default:ja).\n"
 	"Mode can be one of the following values:\n"
@@ -94,7 +95,7 @@ struct command commands[] = {
 	"Files or directories beginning with * were returned as unicode.\n"},
 {"delete", delete, "delete <filename>\t- delete a file\n",
 	"Deletes a file from dicionary.\n"},
-{"send", send, "send <filename>\t\t- upload a file\n",
+    {"send", _send, "send <filename>\t\t- upload a file\n",
 	"Uploads a file to dicionary.\n"},
 {"get", get, "get <filename>\t\t- download a file\n",
 	"Downloads a file from dicionary.\n"},
@@ -251,9 +252,8 @@ void help(struct state *s)
 	}
 }
 
-void connect(struct state *s)
-{
-	int  options = OPEN_LIBRARY | LOCALE_JA;
+void _connect(struct state *s) {
+  int options = OPEN_LIBRARY | LOCALE_JA;
 	char *mode;
 	char *locale;
 	int error = 0;
@@ -393,8 +393,7 @@ void format(struct state *s)
 	printf("%s\n", exword_response_to_string(rsp));
 }
 
-void send(struct state *s)
-{
+void _send(struct state *s) {
 	int rsp, len;
 	char *buffer;
 	char *filename;
