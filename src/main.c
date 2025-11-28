@@ -27,8 +27,8 @@
 #include <readline/history.h>
 
 #include "exword.h"
-#include "util.h"
 #include "list.h"
+#include "util.h"
 
 struct state {
 	exword_t *device;
@@ -99,7 +99,8 @@ struct command commands[] = {
 	"Uploads a file to dicionary.\n"},
 {"get", get, "get <filename>\t\t- download a file\n",
 	"Downloads a file from dicionary.\n"},
-{"setpath", setpath, "setpath <path>\t\t- changes directory on dictionary\n",
+    {"setpath", setpath,
+     "setpath <path>\t\t- changes directory on dictionary\n",
 	"Changes to the the specified path.\n\n"
 	"<path> is in the form of <sd|mem://<path>\n"
 	"Example: mem:/// - sets path to root of internal memory\n"},
@@ -116,15 +117,15 @@ struct command commands[] = {
 	"remove  <id>\t  - removes specified add-on dictionary\n"
 	"install <id>\t  - installs specified add-on dictionary\n"},
 {"set", set, "set <option> [value]\t- sets program options\n",
-	"Sets <option> to [value], if no value is specified will display current value.\n\n"
+     "Sets <option> to [value], if no value is specified will display current "
+     "value.\n\n"
 	"Available options:\n"
 	"debug <level>  - sets debug level (0-5)\n"
 	"mkdir <on|off> - specifies whether setpath should create directories\n"},
 {"exit", quit, "exit\t\t\t- exits program\n",
 	"Exits program and disconnects from device.\n"},
 {"help", help, NULL, NULL},
-{NULL, NULL, NULL, NULL}
-};
+    {NULL, NULL, NULL, NULL}};
 
 void load_history()
 {
