@@ -26,8 +26,8 @@
 #ifndef OBEX_H
 #define OBEX_H
 
-#include <libusb-1.0/libusb.h>
 #include <inttypes.h>
+#include <libusb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
