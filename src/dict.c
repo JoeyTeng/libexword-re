@@ -29,7 +29,7 @@
 
 #include "dict.h"
 #include "exword.h"
-#include "util.h"
+#include "_util.h"
 
 typedef struct {
 	char id[32];

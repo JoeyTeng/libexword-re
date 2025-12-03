@@ -22,6 +22,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+#include <stdlib.h>
+
 #if defined(__MINGW32__)
 # define mkdir(path, mode) _mkdir(path)
 #endif

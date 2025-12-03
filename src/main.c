@@ -29,7 +29,7 @@
 #include "dict.h"
 #include "exword.h"
 #include "list.h"
-#include "util.h"
+#include "_util.h"
 
 struct state {
 	exword_t *device;

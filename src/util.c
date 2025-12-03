@@ -37,6 +37,8 @@
 # define PATH_SEP "/"
 #endif
 
+#include "_util.h"
+
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
