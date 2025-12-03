@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <dirent.h>
 #include <libgen.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -395,8 +396,25 @@ void format(struct state *s)
 	printf("%s\n", exword_response_to_string(rsp));
 }
 
-void _send(struct state *s) {
+void _send_one_file(exword_t *device, char *filename, int filename_len) {
   int rsp, len;
+  char *buffer;
+  char *name = NULL;
+
+  name = xmalloc(filename_len + 1);
+  strcpy(name, filename);
+  printf("uploading file %s...", name);
+  rsp = read_file(name, &buffer, &len);
+  if (rsp == 0x20)
+    rsp = exword_send_file(device, basename(name), buffer, len);
+  printf("%s\n", exword_response_to_string(rsp));
+
+  free(name);
+  free(buffer);
+}
+
+void _send(struct state *s) {
+  int rsp, len, filename_len;
   char *buffer;
   char *filename;
   char *name = NULL;
@@ -405,16 +423,54 @@ void _send(struct state *s) {
   filename = peek_arg(&(s->cmd_list));
   if (filename == NULL) {
     printf("No file specified\n");
+    return;
+  }
+
+  filename_len = strlen(filename);
+  if (filename_len == 0) {
+    printf("No file specified\n");
+    return;
+  }
+
+  if (filename[filename_len - 1] == '*' || is_dir(filename) == 1) {
+    printf("Will send all files in the directory, confirm (y/N)?\n");
+    char response;
+    response = getchar();
+    if (response != 'y' && response != 'Y') {
+      printf("Operation cancelled.\n");
+      return;
+    }
+    char * dir_name = xmalloc(filename_len + 1);
+    strcpy(dir_name, filename);
+    if (dir_name[filename_len - 1] == '*') {
+      dir_name[filename_len - 1] = '\0';
+    }
+    DIR *dir = opendir(dir_name);
+    if (dir == NULL) {
+      printf("Could not open directory %s\n", dir_name);
+      free(dir_name);
+      return;
+    }
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+      // skip . and ..
+      if (entry->d_namlen == 1 && entry->d_name[0] == '.'
+          || entry->d_namlen == 2 && entry->d_name[0] == '.' && entry->d_name[1] == '.')
+        continue;
+      if (entry->d_type == DT_DIR) {
+        printf("Skipping directory %s\n", entry->d_name);
+        continue;
+      }
+
+      char *full_path = xmalloc(strlen(dir_name) + strlen(entry->d_name) + 2);
+      strcpy(full_path, dir_name);
+      strcat(full_path, PATH_SEP);
+      strcat(full_path, entry->d_name);
+      _send_one_file(s->device, full_path, strlen(full_path));
+      free(full_path);
+    }
   } else {
-    name = xmalloc(strlen(filename) + 1);
-    strcpy(name, filename);
-    printf("uploading...");
-    rsp = read_file(name, &buffer, &len);
-    if (rsp == 0x20)
-      rsp = exword_send_file(s->device, basename(name), buffer, len);
-    free(name);
-    free(buffer);
-    printf("%s\n", exword_response_to_string(rsp));
+	_send_one_file(s->device, filename, filename_len);
   }
 }
 

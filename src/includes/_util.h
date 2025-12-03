@@ -26,6 +26,9 @@
 
 #if defined(__MINGW32__)
 # define mkdir(path, mode) _mkdir(path)
+# define PATH_SEP "\\"
+#else
+# define PATH_SEP "/"
 #endif
 
 void * xmalloc(size_t n);
@@ -33,5 +36,6 @@ int write_file(const char* filename, char *buffer, int len);
 int read_file(const char* filename, char **buffer, int *len);
 const char * get_data_dir();
 char * mkpath(const char *id, const char *filename);
+int is_dir(const char *path);
 
 #endif

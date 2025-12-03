@@ -29,12 +29,8 @@
 #if defined(__MINGW32__)
 # include <shlwapi.h>
 # include <shlobj.h>
-# define PATH_SEP "\\"
 #elif defined(__APPLE__) && defined(__MACH__)
 # include <Carbon/Carbon.h>
-# define PATH_SEP "/"
-#else
-# define PATH_SEP "/"
 #endif
 
 #include "_util.h"
@@ -156,4 +152,14 @@ int write_file(const char* filename, char *buffer, int len)
 	}
 	close(fd);
 	return 0x20;
+}
+
+int is_dir(const char *path)
+{
+	struct stat buf;
+	if (stat(path, &buf) != 0)
+		return -1;
+	if (buf.st_mode & S_IFDIR)
+		return 1;
+	return 0;
 }
